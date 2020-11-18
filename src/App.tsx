@@ -1,26 +1,36 @@
 import React from 'react';
-import logo from './logo.svg';
+import SearchInput from './components/SearchInput';
+import SearchResults from './components/SearchResults';
 import './App.css';
 
+const API_KEY = process.env.REACT_APP_API_KEY as string;
+
+const search = (query: string, key: string = '') => {
+    return fetch(`https://api.giphy.com/v1/gifs/search?api_key=${key}&q=${encodeURIComponent(query)}`)
+        .then(response => response.json());
+}
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [data, setData] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+
+    const handleSearch = React.useCallback((text: string) => {
+        setLoading(true);
+        search(text, API_KEY)
+            .then((results) => {
+                setData(results.data);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    return (
+        <div className="App">
+            <SearchInput onChange={handleSearch} />
+            {loading ? <p>Searching...</p> : <SearchResults data={data} />}
+        </div>
+    );
 }
 
 export default App;
