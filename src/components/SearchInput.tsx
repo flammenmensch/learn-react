@@ -6,12 +6,22 @@ interface Props {
 
 const SearchInput = (props: Props) => {
     const {onChange} = props;
+
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
+    React.useEffect(() => {
+        if (inputRef.current !== null) {
+            inputRef.current.focus();
+        }
+    }, [inputRef]);
+
     const handleChange = React.useCallback((event) => {
         onChange(event.target.value);
     }, [onChange]);
+
     return (
         <div>
-            <input type="text" onChange={handleChange} />
+            <input ref={inputRef} type="text" onChange={handleChange} />
         </div>
     );
 }

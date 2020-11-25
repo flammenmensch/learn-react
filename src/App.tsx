@@ -1,32 +1,27 @@
 import React from 'react';
 import SearchInput from './components/SearchInput';
 import SearchResults from './components/SearchResults';
+import { useGifSearch } from './hooks/useGifSearch';
+import { useTheme } from './components/ThemeProvider';
+import ThemeSwitcher from './components/ThemeSwitcher';
+
 import './App.css';
 
-const API_KEY = process.env.REACT_APP_API_KEY as string;
-
-const search = (query: string, key: string = '') => {
-    return fetch(`https://api.giphy.com/v1/gifs/search?api_key=${key}&q=${encodeURIComponent(query)}`)
-        .then(response => response.json());
-}
-
 function App() {
-    const [data, setData] = React.useState([]);
-    const [loading, setLoading] = React.useState(false);
+    const [query, setQuery] = React.useState('');
+
+    const { data, loading } = useGifSearch(query);
+
+    const { theme } = useTheme();
 
     const handleSearch = React.useCallback((text: string) => {
-        setLoading(true);
-        search(text, API_KEY)
-            .then((results) => {
-                setData(results.data);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+        setQuery(text);
     }, []);
 
     return (
-        <div className="App">
+        <div className={`App App--${theme}`}>
+            <ThemeSwitcher />
+            <h1>Gif Search</h1>
             <SearchInput onChange={handleSearch} />
             {loading ? <p>Searching...</p> : <SearchResults data={data} />}
         </div>
