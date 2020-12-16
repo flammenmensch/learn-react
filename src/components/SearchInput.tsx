@@ -7,13 +7,20 @@ interface Props {
 const SearchInput = (props: Props) => {
     const {onChange} = props;
 
-    const inputRef = React.useRef<HTMLInputElement>(null);
+    /*const inputRef = React.useRef<HTMLInputElement>(null);
 
     React.useEffect(() => {
         if (inputRef.current !== null) {
             inputRef.current.focus();
         }
-    }, [inputRef]);
+    }, [inputRef]);*/
+
+    // ref-callback
+    const inputRefCallback = React.useCallback((node: HTMLInputElement) => {
+        if (node !== null) {
+            node.focus();
+        }
+    }, []);
 
     const handleChange = React.useCallback((event) => {
         onChange(event.target.value);
@@ -21,9 +28,10 @@ const SearchInput = (props: Props) => {
 
     return (
         <div>
-            <input ref={inputRef} type="text" onChange={handleChange} />
+            <input ref={inputRefCallback} type="text" onChange={handleChange} />
         </div>
     );
 }
 
-export default SearchInput;
+// shouldComponentUpdate(prev, next)
+export default React.memo(SearchInput);
